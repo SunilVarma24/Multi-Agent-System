@@ -1,4 +1,4 @@
-# Multi-Agent System Documentation
+# Market Research & Use Case Generation Agent
 
 ## Introduction
 AI and Generative AI technologies can revolutionize businesses by improving operations, customer satisfaction, and efficiency. This project focuses on creating a Multi-Agent system to generate use cases tailored to specific industries or companies by conducting research and proposing AI/ML solutions.
