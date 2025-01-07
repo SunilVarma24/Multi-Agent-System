@@ -51,14 +51,7 @@ This script defines the core functionality of the multi-agent system, including 
 ### 1.2 Code Structure
 
 #### Imports
-The script imports required libraries, including os, yaml, and langchain modules, for environment setup, workflow creation, and LLM interaction.
-
-#### Environment Variables
-```python
-os.environ["OPENAI_API_KEY"] = api_creds['openai_key']
-os.environ["TAVILY_API_KEY"] = api_creds['tavily_key']
-```
-Environment variables store API keys securely.
+The script imports required libraries, including langchain and langgraph modules, for agent orchestration, workflow creation, and LLM interaction.
 
 #### Agents
 Agents are implemented using prompts and tied to LLMs:
@@ -85,8 +78,6 @@ A StateGraph defines transitions between agents and tools:
 
 #### Visualization
 The workflow is visualized using a Mermaid diagram to understand agent interactions.
-![image](https://github.com/user-attachments/assets/60d33056-8691-4705-a180-cd6123eede9e)
-
 
 ## 2. app.py
 This script provides a Streamlit-based frontend for interacting with the multi-agent system.
@@ -127,6 +118,32 @@ Results from each agent are formatted and displayed in dedicated sections:
 Includes error messages if:
 * Inputs are missing.
 * Workflow execution fails due to API errors.
+
+### 2.3 Running the Application
+To run the `app.py` Streamlit application, follow these steps:
+
+1. **Ensure Streamlit is Installed**
+   * If Streamlit is not installed, use the following command:
+   ```bash
+   pip install streamlit
+   ```
+
+2. **Navigate to the Script Directory**
+   * Open a terminal or command prompt.
+   * Navigate to the folder where `app.py` is located:
+   ```bash
+   cd /path/to/your/project/
+   ```
+
+3. **Run the Streamlit Application**
+   * Execute the following command:
+   ```bash
+   streamlit run app.py
+   ```
+
+4. **Access the Application**
+   * After running the above command, a local server will start.
+   * Open the URL displayed in the terminal (e.g., `http://localhost:8501`) in your web browser to access the Streamlit interface.
 
 ## 3. Interactions Between Scripts
 
