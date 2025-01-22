@@ -98,7 +98,7 @@ The script imports Streamlit for the frontend, as well as the multi_agent_system
 
 #### User Input
 ```python
-user_input = st.text_input("Enter your query about industry/company"
+user_input = st.text_input("Enter your query about industry/company")
 ```
 Fields to capture user-specific inputs for customization.
 
