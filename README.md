@@ -14,9 +14,8 @@ The system consists of three main agents:
    - Proposes AI, GenAI, and ML use cases tailored to the company's needs.
 
 3. **Resource Asset Collection Agent**:
-   - Searches platforms like Kaggle, HuggingFace, and GitHub for relevant datasets.
+   - Searches platforms like Kaggle, HuggingFace, and GitHub for relevant resources of use cases proposed.
    - Collects resource links in a markdown file.
-   - [Optional] Suggests GenAI solutions for internal or external purposes.
 
 
 ## Features
