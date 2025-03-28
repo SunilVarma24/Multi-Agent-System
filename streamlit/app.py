@@ -31,7 +31,10 @@ def main():
         # Initialize agent state
         agent_state = AgentState(
             messages=[HumanMessage(content=user_input)],
-            sender="User"
+            sender="User",
+            industry_info={},
+            use_cases=[],
+            resources=[]
         )
         
         # Run the workflow

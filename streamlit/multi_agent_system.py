@@ -54,6 +54,9 @@ def github_search(query: str) -> str:
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], operator.add]
     sender: str
+    industry_info: dict  # Store industry research results
+    use_cases: list     # Store generated use cases
+    resources: list      # Store collected resources
 
 # 3. **Create Agents**
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
@@ -161,7 +164,10 @@ def industry_research_node(state):
         result = AIMessage(**result.dict(exclude={"type", "name"}), name="Industry_Researcher")
     return {
         "messages": [result],
-        "sender": "Industry_Researcher"
+        "sender": "Industry_Researcher",
+        "industry_info": state.get("industry_info", {}),
+        "use_cases": state.get("use_cases", []),
+        "resources": state.get("resources", [])
     }
 
 def usecase_generator_node(state):
@@ -172,7 +178,10 @@ def usecase_generator_node(state):
         result = AIMessage(**result.dict(exclude={"type", "name"}), name="UseCase_Generator")
     return {
         "messages": [result],
-        "sender": "UseCase_Generator"
+        "sender": "UseCase_Generator",
+        "industry_info": state.get("industry_info", {}),
+        "use_cases": state.get("use_cases", []),
+        "resources": state.get("resources", [])
     }
 
 def resource_collector_node(state):
@@ -183,7 +192,10 @@ def resource_collector_node(state):
         result = AIMessage(**result.dict(exclude={"type", "name"}), name="Resource_Collector")
     return {
         "messages": [result],
-        "sender": "Resource_Collector"
+        "sender": "Resource_Collector",
+        "industry_info": state.get("industry_info", {}),
+        "use_cases": state.get("use_cases", []),
+        "resources": state.get("resources", [])
     }
 
 
