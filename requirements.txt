@@ -6,3 +6,4 @@ langchain-openai==0.3.11
 langgraph==0.3.21
 PyYAML==6.0.2
 streamlit==1.44.0
+ipython==9.0.2
