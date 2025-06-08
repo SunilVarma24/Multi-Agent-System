@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+notebooks/
+src/
+.git/
+.gitignore
+*.ipynb
+.env
+main.py
+README.md
+LICENSE
+Dockerfile

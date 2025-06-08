@@ -1,18 +1,17 @@
 # src/config.py
 
-import locale
+# import locale
+# import os
+# import yaml
+
+# # Ensure proper encoding
+# locale.getpreferredencoding = lambda: "UTF-8"
+
+# Load OpenAI API & Tavily Web Search keys
+from dotenv import load_dotenv
 import os
-import yaml
 
-# Ensure proper encoding
-locale.getpreferredencoding = lambda: "UTF-8"
+load_dotenv()
 
-# Load OpenAI API key
-with open("openai_key.yaml", 'r') as file:
-    api_creds = yaml.safe_load(file)
-os.environ["OPENAI_API_KEY"] = api_creds['openai_key']
-
-# Load Tavily API key
-with open("tavily_key.yaml", 'r') as file:
-    api_creds = yaml.safe_load(file)
-os.environ["TAVILY_API_KEY"] = api_creds['tavily_key']
+openai_api_key = os.getenv("OPENAI_API_KEY")
+tavily_api_key = os.getenv("TAVILY_API_KEY")

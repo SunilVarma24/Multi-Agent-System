@@ -15,15 +15,13 @@ import operator
 
 # 0. **Set up OpenAI & Tavily Search API keys**
 
-with open("openai_key.yaml", 'r') as file:
-    api_creds = yaml.safe_load(file)
+from dotenv import load_dotenv
+import os
 
-os.environ["OPENAI_API_KEY"] = api_creds['openai_key']
+load_dotenv()
 
-with open("tavily_key.yaml", 'r') as file:
-    api_creds = yaml.safe_load(file)
-
-os.environ["TAVILY_API_KEY"] = api_creds['tavily_key']
+openai_api_key = os.getenv("OPENAI_API_KEY")
+tavily_api_key = os.getenv("TAVILY_API_KEY")
 
 # 1. **Create Tools**
 
@@ -54,9 +52,6 @@ def github_search(query: str) -> str:
 class AgentState(TypedDict):
     messages: Annotated[Sequence[BaseMessage], operator.add]
     sender: str
-    industry_info: dict  # Store industry research results
-    use_cases: list     # Store generated use cases
-    resources: list      # Store collected resources
 
 # 3. **Create Agents**
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
@@ -164,10 +159,7 @@ def industry_research_node(state):
         result = AIMessage(**result.dict(exclude={"type", "name"}), name="Industry_Researcher")
     return {
         "messages": [result],
-        "sender": "Industry_Researcher",
-        "industry_info": state.get("industry_info", {}),
-        "use_cases": state.get("use_cases", []),
-        "resources": state.get("resources", [])
+        "sender": "Industry_Researcher"
     }
 
 def usecase_generator_node(state):
@@ -178,10 +170,7 @@ def usecase_generator_node(state):
         result = AIMessage(**result.dict(exclude={"type", "name"}), name="UseCase_Generator")
     return {
         "messages": [result],
-        "sender": "UseCase_Generator",
-        "industry_info": state.get("industry_info", {}),
-        "use_cases": state.get("use_cases", []),
-        "resources": state.get("resources", [])
+        "sender": "UseCase_Generator"
     }
 
 def resource_collector_node(state):
@@ -192,10 +181,7 @@ def resource_collector_node(state):
         result = AIMessage(**result.dict(exclude={"type", "name"}), name="Resource_Collector")
     return {
         "messages": [result],
-        "sender": "Resource_Collector",
-        "industry_info": state.get("industry_info", {}),
-        "use_cases": state.get("use_cases", []),
-        "resources": state.get("resources", [])
+        "sender": "Resource_Collector"
     }
 
 
@@ -208,7 +194,7 @@ tool_node = ToolNode(tools)
 
 # 6. **Define Edge Logic**
 
-def router(state) -> Literal["call_tool", "__end__", "continue"]:
+def router(state) -> Literal["call_tool", "__end__", "continue_to_usecase", "continue_to_resource"]:
     messages = state["messages"]
     last_message = messages[-1]
 
