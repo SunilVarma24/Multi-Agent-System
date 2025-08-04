@@ -4,12 +4,11 @@ __pycache__/
 *.pyd
 venv/
 notebooks/
-src/
 .git/
 .gitignore
 *.ipynb
 .env
-main.py
 README.md
 LICENSE
 Dockerfile
+results/

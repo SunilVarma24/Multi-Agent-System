@@ -2,9 +2,7 @@
 
 from langgraph.prebuilt import ToolNode
 from langgraph.graph import END, StateGraph
-from langchain_core.messages import BaseMessage, AIMessage, ToolMessage
 from typing import Literal
-import operator
 
 from src.agents import AgentState, industry_research_node, usecase_generator_node, resource_collector_node
 from src.tools import tv_search, kaggle_dataset_search, huggingface_search, github_search

@@ -3,11 +3,24 @@
 from typing import Annotated, Sequence, TypedDict
 import operator
 
-from langchain_core.messages import BaseMessage, ToolMessage, AIMessage, HumanMessage
+from langchain_core.messages import BaseMessage, ToolMessage, AIMessage
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 from src.tools import tv_search, kaggle_dataset_search, huggingface_search, github_search
+
+# Load environment variables from .env file
+# Step 1: Get absolute path to the project root
+from dotenv import load_dotenv
+from pathlib import Path
+
+project_root = Path(__file__).resolve().parent.parent
+
+# Step 2: Construct .env path explicitly
+env_path = project_root / ".env"
+
+# Step 3: Load it explicitly
+load_dotenv(dotenv_path=env_path)
 
 # Graph state: the object passed between nodes
 class AgentState(TypedDict):
@@ -95,6 +108,23 @@ Instructions:
 - Use {github_search} for GitHub resources
 - Make sure all links are clickable
 - Format output in markdown for easy reading
+- The output should be structured as follows for each use case:
+  - Use Case 1:
+    - Problem Statement: [Insert Problem Statement]
+    - Proposed Solution: [Insert Proposed Solution]
+    - Expected Benefits: [Insert Expected Benefits]
+    - Relevant Resources:
+      1. Kaggle: [Link]
+        - Content: [Description]
+        - Usage: [How it can be used]
+      2. HuggingFace: [Link]
+        - Content: [Description]
+        - Usage: [How it can be used]
+      3. GitHub: [Link]
+        - Content: [Description]
+        - Usage: [How it can be used]
+  - Repeat for each use case
+
 
 When you have collected all resources, start your response with "FINAL ANSWER".
 """),
@@ -111,35 +141,31 @@ resource_tools = [kaggle_dataset_search, huggingface_search, github_search]
 resource_collector_agent = resource_prompt | llm.bind_tools(resource_tools)
 
 # Define Agent Nodes
-
-def industry_research_node(state: AgentState) -> AgentState:
-    result = industry_research_agent.invoke(state)
+async def industry_research_node(state: AgentState) -> AgentState:
+    result = await industry_research_agent.ainvoke(state)
     if isinstance(result, ToolMessage):
-        pass
-    else:
-        result = AIMessage(**result.dict(exclude={"type", "name"}), name="Industry_Researcher")
+        return state  # unchanged if tool message
+    result = AIMessage(**result.dict(exclude={"type", "name"}), name="Industry_Researcher")
     return {
         "messages": [result],
         "sender": "Industry_Researcher"
     }
 
-def usecase_generator_node(state: AgentState) -> AgentState:
-    result = usecase_generator_agent.invoke(state)
+async def usecase_generator_node(state: AgentState) -> AgentState:
+    result = await usecase_generator_agent.ainvoke(state)
     if isinstance(result, ToolMessage):
-        pass
-    else:
-        result = AIMessage(**result.dict(exclude={"type", "name"}), name="UseCase_Generator")
+        return state
+    result = AIMessage(**result.dict(exclude={"type", "name"}), name="UseCase_Generator")
     return {
         "messages": [result],
         "sender": "UseCase_Generator"
     }
 
-def resource_collector_node(state: AgentState) -> AgentState:
-    result = resource_collector_agent.invoke(state)
+async def resource_collector_node(state: AgentState) -> AgentState:
+    result = await resource_collector_agent.ainvoke(state)
     if isinstance(result, ToolMessage):
-        pass
-    else:
-        result = AIMessage(**result.dict(exclude={"type", "name"}), name="Resource_Collector")
+        return state
+    result = AIMessage(**result.dict(exclude={"type", "name"}), name="Resource_Collector")
     return {
         "messages": [result],
         "sender": "Resource_Collector"

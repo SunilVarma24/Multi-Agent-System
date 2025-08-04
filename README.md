@@ -15,8 +15,7 @@ The system consists of three main agents:
 
 3. **Resource Asset Collection Agent**:
    - Searches platforms like Kaggle, HuggingFace, and GitHub for relevant resources of use cases proposed.
-   - Collects resource links in a markdown file.
-
+   - Provides a structured output of datasets, repositories, and tools for implementation.
 
 ## Features
 - **Industry Analysis**: Understands market trends and company needs.
@@ -27,11 +26,12 @@ The system consists of three main agents:
 ## Technologies Used
 - **LangChain**: To build and manage agents.
 - **LangGraph**: For multi-agent communication and task execution.
-- **Streamlit**: To deploy and visualize the system.
+- **FastAPI**: To provide a robust backend API for executing agent workflows.
+- **Streamlit**: To deploy and visualize the system via a user-friendly frontend.
 
 ## Source Code
-## 1. multi_agent_system.py
-This script defines the core functionality of the multi-agent system, including agents, workflows, and tools.
+## 1. src/agents.py
+This script defines the core functionality of the multi-agent system, including agent definitions, prompts, and tool integrations.
 
 ### 1.1 Key Components
 
@@ -40,128 +40,169 @@ This script defines the core functionality of the multi-agent system, including 
 * Use Case Generator Agent: Generates relevant AI/ML use cases.
 * Resource Collector Agent: Collects datasets, repositories, and tools to implement use cases.
 
+#### Prompts:
+* Each agent has a specific prompt template that guides its operation.
+* Prompts are designed to extract relevant information and generate actionable insights.
+
 #### Tools:
-* Tavily Search (tv_search): Extracts industry/company information.
-* Kaggle, HuggingFace, GitHub search tools: Used for dataset and resource collection.
+* Tavily search for industry research.
+* Kaggle, HuggingFace, GitHub search tools for dataset and resource collection.
 
-#### Workflow:
-* A StateGraph workflow manages the transitions between agents, tools, and decision points.
-
-### 1.2 Code Structure
-
-#### Imports
-The script imports required libraries, including langchain and langgraph modules, for agent orchestration, workflow creation, and LLM interaction.
-
-#### Agents
-Agents are implemented using prompts and tied to LLMs:
-
-**Industry Research Agent:**
-* Purpose: To collect industry-specific information and analyze trends.
-* Tools Used: Tavily search (tv_search).
-
-**Use Case Generator Agent:**
-* Purpose: Generate AI/ML use cases, including problem statements, solutions, and benefits.
-* Tools Used: None by default (relies on Industry Research output).
-
-**Resource Collector Agent:**
-* Purpose: Gather resources from Kaggle, HuggingFace, and GitHub for implementing use cases.
-* Tools Used: Kaggle, HuggingFace, GitHub search tools.
-
-#### Workflow Definition
-A StateGraph defines transitions between agents and tools:
-* Entry point: Industry_Researcher
-* Conditional routing:
-  * From Industry_Researcher to UseCase_Generator or tool call.
-  * From UseCase_Generator to Resource_Collector.
-  * From Resource_Collector to tool call or end state.
-
-#### Visualization
-The workflow is visualized using a Mermaid diagram to understand agent interactions.
-
-## 2. app.py
-This script provides a Streamlit-based frontend for interacting with the multi-agent system.
+## 2. src/tools.py
+This script defines the tools used by agents to perform specific tasks, such as searching for datasets or repositories.
 
 ### 2.1 Key Components
+
+#### Tools:
+* Tavily search for industry research.
+* Kaggle dataset search for relevant datasets.
+* HuggingFace search for machine learning models and datasets.
+* GitHub search for repositories and code examples.
+
+### 3. src/graph.py
+This script defines the multi-agent workflow using LangGraph, integrating agents and tools into a cohesive system.
+
+## 3.1 Key Components
+
+### StateGraph:
+* Defines the flow of information between agents and tools.
+* Manages transitions based on agent outputs and tool results.
+
+## 4. main.py
+This script provides a FastAPI-based backend for executing the multi-agent workflow.
+
+### 4.1 Key Components
+
+#### FastAPI Integration:
+* Initializes a FastAPI application to handle requests.
+* Defines endpoints for executing agent workflows and returning results.
+
+#### Request Handling:
+* Accepts user input as a POST request.
+* Validates input and executes the agent workflow.
+* Returns results in a structured JSON format.
+
+## 5. app.py
+This script provides a Streamlit-based frontend for interacting with the FastAPI backend.
+
+### 5.1 Key Components
 
 #### UI Layout:
 * User input for company/industry names and configuration parameters.
 * Display results from each agent's output in an organized manner.
 
 #### Backend Integration:
-* Calls the multi_agent_system.py workflow and manages its execution.
-* Displays real-time outputs for transparency.
+* Calls the FastAPI backend endpoints and manages their execution.
+* Displays results in real-time, allowing users to interactively explore generated use cases and collected resources.
 
-### 2.2 Code Structure
-
-#### Imports
-The script imports Streamlit for the frontend, as well as the multi_agent_system workflow.
-
-#### User Input
-```python
-user_input = st.text_input("Enter your query about industry/company")
+## How to Run the Application
+### 0. Prerequisites
+Ensure you have Python 3.8 or higher installed along with the required libraries. You can install the necessary dependencies using pip:
+```bash
+pip install -r requirements.txt
 ```
-Fields to capture user-specific inputs for customization.
-
-#### Agent Execution
-```python
-result = agent_workflow.run(user_input)
+### Environment Variables
+Set the following environment variables in a `.env` file or your system's environment:
+```plaintext
+OPENAI_API_KEY=your_openai_api_key
+TAVILY_API_KEY=your_tavily_api_key
 ```
-Runs the compiled workflow and passes user input to the agents.
 
-#### Output Display
-Results from each agent are formatted and displayed in dedicated sections:
-* Generated use cases
-* Collected resources
+### 1. FastAPI Backend
+To run the FastAPI backend, follow these steps:
+1. **Ensure FastAPI and Uvicorn are Installed**
+   * If not installed, use the following command:
+   ```bash
+   pip install fastapi uvicorn
+   ```
+2. **Navigate to the Script Directory**
+   * Open a terminal or command prompt.
+   * Navigate to the folder where `main.py` is located:
+   ```bash
+   cd /path/to/your/project/
+   ```
+3. **Run the FastAPI Application**
+   * Execute the following command:
+   ```bash
+   uvicorn main:app --host 0.0.0.0 --port 8000
+   ```
+4. **Access the API Documentation**
+   * Open your web browser and go to `http://localhost:8000/docs` to view the API documentation and test endpoints.
 
-#### Error Handling
-Includes error messages if:
-* Inputs are missing.
-* Workflow execution fails due to API errors.
-
-### 2.3 Running the Application
-To run the `app.py` Streamlit application, follow these steps:
-
+### 2. Streamlit Frontend
+To run the Streamlit frontend, follow these steps:
 1. **Ensure Streamlit is Installed**
    * If Streamlit is not installed, use the following command:
    ```bash
    pip install streamlit
    ```
-
 2. **Navigate to the Script Directory**
    * Open a terminal or command prompt.
    * Navigate to the folder where `app.py` is located:
    ```bash
    cd /path/to/your/project/
    ```
-
 3. **Run the Streamlit Application**
    * Execute the following command:
    ```bash
-   streamlit run app.py
+   streamlit run streamlit/app.py
    ```
-
-4. **Access the Application**
+4. **Access the Streamlit Application**
    * After running the above command, a local server will start.
    * Open the URL displayed in the terminal (e.g., `http://localhost:8501`) in your web browser to access the Streamlit interface.
 
-## 3. Interactions Between Scripts
+## Interactions Between Scripts
 
 ### Frontend (app.py):
 * Captures user input.
-* Executes the multi-agent workflow.
+* Calls the FastAPI backend to execute agent workflows.
 * Displays results interactively.
 
-### Backend (multi_agent_system.py):
-* Defines agents and their functionality.
-* Manages workflows and transitions between agents.
-* Executes tasks and returns results to the frontend.
+### Backend (main.py):
+* Receives user input from the frontend.
+* Validates and processes the input.
+* Executes the agent workflow defined.
+* Returns results to the frontend in a structured format.
 
-## 4. Key Interactions
+## Results
+The application generates AI/ML use cases based on the provided company or industry name. It collects relevant datasets and resources, which are displayed in the Streamlit frontend. The results include:
+- Proposed AI/ML use cases tailored to the company's needs.
+- Collected resources such as datasets, repositories, and tools for implementation.
 
-### Agent-to-Agent Communication:
-* Industry_Researcher feeds insights to UseCase_Generator.
-* UseCase_Generator provides problems/solutions to Resource_Collector.
+You can also view a sample response pdf file in the results folder, which includes:
+- Use cases generated by the agents.
+- Collected resources in a structured format.
 
-### Tool Usage:
-* Industry_Researcher calls Tavily search for information.
-* Resource_Collector uses Kaggle, HuggingFace, and GitHub tools for resource collection.
+## Deployment
+To deploy the application, you can use Docker. The provided `Dockerfile` builds an image that includes both the FastAPI backend and the Streamlit frontend.
+### 0. start.sh
+- This script is used to start the FastAPI and Streamlit applications concurrently. It ensures that both services are running and accessible.
+- Create a Dockerfile in the project root directory.
+- Create a docker-compose.yml file to manage the services.
+
+### 1. Build the Docker Image
+```bash
+docker build -t multi-agent-system .
+```
+### 2. Run the Docker Container
+```bash
+docker run -p 8000:8000 -p 8501:8501 multi-agent-system
+```
+### 3. Access the Application
+* FastAPI API: `http://localhost:8000/docs`
+* Streamlit UI: `http://localhost:8501`
+
+## Testing
+To test the application, you can use the provided FastAPI endpoints to submit requests and verify the responses. The Streamlit frontend allows for interactive testing by entering company or industry names and viewing the generated use cases and collected resources.
+
+## Future Enhancements
+- **Enhanced Agent Capabilities**: Add more agents for deeper analysis and broader use case generation.
+- **Integration with More Data Sources**: Expand the toolset to include additional data sources for resource collection.
+- **User Authentication**: Implement user authentication for secure access to the application.
+- **Deployment on Cloud Platforms**: Consider deploying the application on cloud platforms like AWS, Azure, or Google Cloud for scalability.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Conclusion
+This project provides a comprehensive multi-agent system for conducting market research and generating AI/ML use cases. By leveraging LangChain and LangGraph, it enables efficient collaboration between agents to gather insights, propose solutions, and collect resources. The FastAPI backend and Streamlit frontend facilitate easy interaction and visualization of results, making it a powerful tool for businesses looking to leverage AI technologies.
