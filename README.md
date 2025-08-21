@@ -24,10 +24,13 @@ The system consists of three main agents:
 - **Customizable Proposals**: Provides actionable insights tailored to the company.
 
 ## Technologies Used
+- **OpenAI API**: For natural language processing and understanding.
 - **LangChain**: To build and manage agents.
 - **LangGraph**: For multi-agent communication and task execution.
 - **FastAPI**: To provide a robust backend API for executing agent workflows.
 - **Streamlit**: To deploy and visualize the system via a user-friendly frontend.
+- **Docker**: For containerization of the application.
+- **Azure**: For cloud deployment and scalability.
 
 ## Source Code
 ## 1. src/agents.py
